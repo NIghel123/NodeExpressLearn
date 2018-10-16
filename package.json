@@ -1,0 +1,22 @@
+{
+  "name": "meadowlarktravel",
+  "version": "0.0.0",
+  "description": "Sample website for Web Development with Node and Express (O'Reilly).",
+  "main": "meadowlark.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \\\\\\\"Error: no test specified\\\\\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NIghel123/NodeExpressLearn.git"
+  },
+  "author": "Ethan Brown",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NIghel123/NodeExpressLearn/issues"
+  },
+  "homepage": "https://github.com/NIghel123/NodeExpressLearn#readme"
+}
