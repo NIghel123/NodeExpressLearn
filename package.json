@@ -18,5 +18,13 @@
   "bugs": {
     "url": "https://github.com/NIghel123/NodeExpressLearn/issues"
   },
-  "homepage": "https://github.com/NIghel123/NodeExpressLearn#readme"
+  "homepage": "https://github.com/NIghel123/NodeExpressLearn#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  }
 }
