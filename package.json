@@ -25,6 +25,10 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "grunt": "^1.0.3",
+    "grunt-cafe-mocha": "^0.1.13",
+    "grunt-contrib-jshint": "^2.0.0",
+    "grunt-exec": "^3.0.0",
     "jshint": "^2.9.6",
     "mocha": "^5.2.0",
     "zombie": "github:NIghel123/zombie"
