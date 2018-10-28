@@ -14,6 +14,7 @@ suite('Cross-Page Tests', function(){
 		var referrer = 'http://localhost:3000/tours/hood-river';
 		browser.visit(referrer, function(){
 			browser.clickLink('.requestGroupRate', function(){
+				console.log(browser.field('referrer').value);
 				assert(browser.field('referrer').value === referrer);
 				done();
 			});

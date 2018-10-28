@@ -1,0 +1,21 @@
+There seems to be some error with the cafe-mocha-modul we installed in grunt. The version "Automating testing with Grunt" 
+
+commit 81f5d5c0d6dc528fd761188fe72d0f839e50a03b
+Author: Nickel Paulsen <nickel.paulsen@gmail.com>
+Date:   Fri Oct 19 21:18:32 2018 +0200
+
+    Automating testing with Grunt
+
+on github still works. The next Idea would be to check the next commit
+
+commit 7c4364128605cb5bfdf47d1bd831ebbf21e3eb23
+Author: Nickel Paulsen <nickel.paulsen@gmail.com>
+Date:   Sat Oct 20 12:04:17 2018 +0200
+
+    small change not important
+
+and see if there is a problem with grunt (i.e with cafe-mocha-modul) or with mocha itself (i.e. 
+
+mocha -u tdd -R spec qa/tests-crosspage.js 2>/dev/null
+
+is giving an error? Maybe then try npm install -g mocha

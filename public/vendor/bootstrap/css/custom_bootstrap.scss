@@ -1,0 +1,27 @@
+// ==========================================================================
+//	  custom your bootstrap themes here.
+//	  Documentation:
+//
+//		  custom.scss: https://getbootstrap.com/docs/4.1/getting-started/theming/
+//		  sass (scss): https://sass-lang.com/guide
+//
+//	  when changing this document it needs to be compiled to custom_bootstrap.css
+//	  in this folder via the compiler sass. See documentation above!
+//==========================================================================
+
+$body-bg: lightgrey;
+
+//required
+@import "../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../node_modules/bootstrap/scss/mixins";
+
+//optional
+@import "../../../../node_modules/bootstrap/scss/reboot";
+@import "../../../../node_modules/bootstrap/scss/type";
+@import "../../../../node_modules/bootstrap/scss/images";
+@import "../../../../node_modules/bootstrap/scss/code";
+@import "../../../../node_modules/bootstrap/scss/grid";
+
+//all of bootstrap
+//@import "../../../../node_modules/bootstrap/scss/bootstrap"
