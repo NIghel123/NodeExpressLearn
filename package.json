@@ -1,43 +1,43 @@
 {
-  "name": "meadowlarktravel",
-  "version": "0.0.0",
-  "description": "Sample website for Web Development with Node and Express (O'Reilly).",
-  "main": "meadowlark.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "scripts": {
-    "test": "echo \\\\\\\"Error: no test specified\\\\\\\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NIghel123/NodeExpressLearn.git"
-  },
-  "author": "Ethan Brown",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/NIghel123/NodeExpressLearn/issues"
-  },
-  "homepage": "https://github.com/NIghel123/NodeExpressLearn#readme",
-  "dependencies": {
-    "body-parser": "^1.18.3",
-    "bootstrap": "^4.1.3",
-    "cookie-parser": "^1.4.3",
-    "express": "^4.16.4",
-    "express-handlebars": "^3.0.0",
-    "express-session": "^1.15.6",
-    "formidable": "^1.2.1",
-    "jquery-file-upload-middleware": "^0.1.8",
-    "nodemailer": "^4.6.8"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "grunt": "^1.0.3",
-    "grunt-cafe-mocha": "^0.1.13",
-    "grunt-contrib-jshint": "^2.0.0",
-    "grunt-exec": "^3.0.0",
-    "jshint": "^2.9.6",
-    "mocha": "^5.2.0",
-    "zombie": "github:NIghel123/zombie"
-  }
+	"name": "meadowlarktravel",
+	"version": "0.0.0",
+	"description": "Sample website for Web Development with Node and Express (O'Reilly).",
+	"main": "meadowlark.js",
+	"directories": {
+		"lib": "lib"
+	},
+	"scripts": {
+		"test": "echo \\\\\\\"Error: no test specified\\\\\\\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/NIghel123/NodeExpressLearn.git"
+	},
+	"author": "Ethan Brown",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/NIghel123/NodeExpressLearn/issues"
+	},
+	"homepage": "https://github.com/NIghel123/NodeExpressLearn#readme",
+	"dependencies": {
+		"body-parser": "^1.18.3",
+		"bootstrap": "^4.1.3",
+		"cookie-parser": "^1.4.3",
+		"express": "^4.16.4",
+		"express-handlebars": "^3.0.0",
+		"express-session": "^1.15.6",
+		"formidable": "^1.2.1",
+		"jquery-file-upload-middleware": "^0.1.8",
+		"nodemailer": "^4.6.8"
+	},
+	"devDependencies": {
+		"chai": "^4.2.0",
+		"grunt": "^1.0.3",
+		"grunt-cafe-mocha": "^0.1.13",
+		"grunt-contrib-jshint": "^2.0.0",
+		"grunt-exec": "^3.0.0",
+		"jshint": "^2.9.6",
+		"mocha": "^5.2.0",
+		"zombie": "github:NIghel123/zombie"
+	}
 }

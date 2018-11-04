@@ -4,7 +4,9 @@ var express = require('express'),
 	jqupload = require('jquery-file-upload-middleware'),
 	session = require('express-session'),
 	nodemailer = require('nodemailer'),
-	credentials = require('./credentials.js');
+	credentials = require('./credentials.js'),
+	//self made module to send email:
+	emailService = require('./lib/email.js')(credentials);
 
 var app = express();
 
@@ -35,15 +37,6 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(require('cookie-parser')(credentials.cookieSecret));
 
-mailTransport.sendMail({
-	from: '"Meadowlark Travel" <info@meadowlarktravel.com>',
-	to: 'nickel.paulsen@gmail.com',
-	subject: 'Your Meadowlark Travel Tour',
-	text: 'Thank you for booking your trip with Meadowlark Travel.  ' +
-		'We look forward to your visit!',
-}, function(err) {
-	if (err) console.error('Unable to send email: ' + err);
-});
 
 app.use(express.static(__dirname + '/public'));
 var bodyParser = require('body-parser');
@@ -107,6 +100,59 @@ app.use(function(req, res, next) {
 	next();
 });
 
+var VALID_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+//a working email sender
+/*mailTransport.sendMail({
+	from: '"Meadowlark Travel" <info@meadowlarktravel.com>',
+	to: 'nickel.paulsen@icloud.com, Nickel Paulsen',
+	subject: 'Your Meadowlark Travel Tour',
+	html: '<h1>Meadowlark Travel</h1>\n<p>Thanks for book your trip with ' +
+		'Meadowlark Travel.  <b>We look forward to your visit!</b>' +
+		'<img src="http://placehold.it/100x100" alt="Meadowlark Travel">',
+	generateTextFromHtml: true,
+}, function(err) {
+	if (err) console.error('Unable to send email: ' + err);
+});*/
+
+/* Easy way to send email via a self programmed module
+var emailService = require('./lib/email.js')(credentials);
+emailService.send('nickel.paulsen@icloud.com', 'Hood River tours on sale today!',
+	'Get \'em while they\'re hot!');*/
+
+//Routes
+app.get('/cart/checkout', function(req, res) {
+	var cart = {}; // req.session.cart;
+	if (!cart) next(new Error('Cart does not exist.'));
+	var name = req.body.name || 'Nickel Paulsen',
+		email = req.body.email || 'nickel.paulsen@icloud.com'; // input validation
+	if (!email.match(VALID_EMAIL_REGEX))
+		return res.next(new Error('Invalid email address.'));
+	// assign a random cart ID; normally we would use a database ID here 
+	cart.number = Math.random().toString().replace(/^0\.0*/, '');
+	cart.billing = {
+		name: name,
+		email: email,
+	};
+	res.render('email/cart-thank-you', {
+		layout: null,
+		cart: cart
+	}, function(err, html) {
+		if (err) console.log('error in email template');
+		mailTransport.sendMail({
+			from: '"Meadowlark Travel": info@meadowlarktravel.com',
+			to: cart.billing.email,
+			subject: 'Thank You for Book your Trip with Meadowlark',
+			html: html,
+			generateTextFromHtml: true
+		}, function(err) {
+			if (err) console.error('Unable to send confirmation: ' + err.stack);
+		});
+	});
+	res.render('cart-thank-you', {
+		cart: cart
+	});
+});
 app.get('/', function(req, res) {
 	res.render('home');
 });
@@ -146,8 +192,6 @@ function NewsletterSignup() {}
 NewsletterSignup.prototype.save = function(cb) {
 	cb();
 };
-
-var VALID_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 app.get('/newsletter', function(req, res) {
 	var name = req.body.name || '',
@@ -243,6 +287,8 @@ app.use('/upload', function(req, res, next) {
 });
 //gives me the invormation that my computer sends to the server
 app.get('/headers', function(req, res) {
+	// for testing if I am emailed when there is an error:
+	// throw new Error('c failed');
 	res.set('Content-Type', 'text/plain');
 	var s = '';
 	for (var name in req.headers) s += name + ': ' + req.headers[name] + '\n';
@@ -259,6 +305,9 @@ app.use(function(err, req, res, next) {
 	console.error(err.stack);
 	res.status(500);
 	res.render('500');
+	//send me an email when my page breaks down!
+	if (err)
+		emailService.emailError('the widget broke down!', __filename, err);
 });
 
 app.listen(app.get('port'), function() {
