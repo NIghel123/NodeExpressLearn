@@ -1,9 +1,20 @@
 var express = require('express'),
 	fortune = require('./lib/fortune.js'),
 	formidable = require('formidable'),
-	jqupload = require('jquery-file-upload-middleware');
+	jqupload = require('jquery-file-upload-middleware'),
+	session = require('express-session'),
+	nodemailer = require('nodemailer'),
+	credentials = require('./credentials.js');
 
 var app = express();
+
+var mailTransport = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
+		user: credentials.gmail.user,
+		pass: credentials.gmail.password,
+	}
+});
 
 // set up handlebars view engine
 var handlebars = require('express-handlebars').create({
@@ -21,6 +32,18 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 3000);
+
+app.use(require('cookie-parser')(credentials.cookieSecret));
+
+mailTransport.sendMail({
+	from: '"Meadowlark Travel" <info@meadowlarktravel.com>',
+	to: 'nickel.paulsen@gmail.com',
+	subject: 'Your Meadowlark Travel Tour',
+	text: 'Thank you for booking your trip with Meadowlark Travel.  ' +
+		'We look forward to your visit!',
+}, function(err) {
+	if (err) console.error('Unable to send email: ' + err);
+});
 
 app.use(express.static(__dirname + '/public'));
 var bodyParser = require('body-parser');
@@ -70,6 +93,20 @@ app.use(function(req, res, next) {
 	next();
 });
 
+app.use(session({
+	secret: 'krunal',
+	resave: true,
+	saveUninitialized: true,
+}));
+
+app.use(function(req, res, next) {
+	// if there's a flash message, transfer 
+	// it to the context, then clear it 
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
+
 app.get('/', function(req, res) {
 	res.render('home');
 });
@@ -103,13 +140,57 @@ app.get('/data/nursery-rhyme', function(req, res) {
 		noun: 'heck',
 	});
 });
+
+// for now, we're mocking NewsletterSignup:
+function NewsletterSignup() {}
+NewsletterSignup.prototype.save = function(cb) {
+	cb();
+};
+
+var VALID_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
 app.get('/newsletter', function(req, res) {
-	// we will learn about CSRF later...for now, we just
-	// provide a dummy value
-	res.render('newsletter', {
-		csrf: 'CSRF token goes here'
+	var name = req.body.name || '',
+		email = req.body.email || '';
+	// input validation
+	if (!email.match(VALID_EMAIL_REGEX)) {
+		if (req.xhr) return res.json({
+			error: 'Invalid name email address.'
+		});
+		req.session.flash = {
+			type: 'danger',
+			intro: 'Validation error!',
+			message: 'The email address you entered was  not valid.',
+		};
+		//return res.redirect(303, '/newsletter/archive');
+	}
+	new NewsletterSignup({
+		name: name,
+		email: email
+	}).save(function(err) {
+		if (err) {
+			if (req.xhr) return res.json({
+				error: 'Database error.'
+			});
+			req.session.flash = {
+				type: 'danger',
+				intro: 'Database error!',
+				message: 'There was a database error; please try again later.',
+			};
+			return res.redirect(303, '/newsletter/archive');
+		}
+		if (req.xhr) return res.json({
+			success: true
+		});
+		req.session.flash = {
+			type: 'success',
+			intro: 'Thank you!',
+			message: 'You have now been signed up for the newsletter.',
+		};
+		return res.redirect(303, '/newsletter/archive');
 	});
 });
+
 app.post('/process', function(req, res) {
 	if (req.xhr || req.accepts('json,html') === 'json') {
 		// if there were an error, we would send { error: 'error description' }
