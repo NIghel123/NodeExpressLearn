@@ -8,7 +8,21 @@ var express = require('express'),
 	//self made module to send email:
 	emailService = require('./lib/email.js')(credentials);
 
+
 var app = express();
+
+switch (app.get('env')) {
+	case 'development':
+		// compact, colorful dev logging
+		app.use(require('morgan')('dev'));
+		break;
+	case 'production':
+		// module 'express-logger' supports daily log rotation
+		app.use(require('express-logger')({
+			path: __dirname + '/log/requests.log'
+		}));
+		break;
+}
 
 var mailTransport = nodemailer.createTransport({
 	service: 'Gmail',
@@ -310,7 +324,20 @@ app.use(function(err, req, res, next) {
 		emailService.emailError('the widget broke down!', __filename, err);
 });
 
-app.listen(app.get('port'), function() {
-	console.log('Express started on http://localhost:' +
-		app.get('port') + '; press Ctrl-C to terminate.');
-});
+var server;
+
+function startServer() {
+	server = http.createServer(app).listen(app.get('port'), function() {
+		console.log('Express started in ' + app.get('env') +
+			' mode on http://localhost:' + app.get('port') +
+			'; press Ctrl-C to terminate.');
+	});
+}
+
+if (require.main === module) {
+	// application run directly; start app server
+	startServer();
+} else {
+	// application imported as a module via "require": export function to create server
+	module.exports = startServer;
+}
