@@ -6,7 +6,8 @@ var express = require('express'),
 	nodemailer = require('nodemailer'),
 	credentials = require('./credentials.js'),
 	//self made module to send email:
-	emailService = require('./lib/email.js')(credentials);
+	emailService = require('./lib/email.js')(credentials),
+	http = require('http');
 
 
 var app = express();
@@ -23,6 +24,13 @@ switch (app.get('env')) {
 		}));
 		break;
 }
+
+// shows which worker is working. Somehow does an endless loop
+//app.use(function(req, res, next) {
+//	var cluster = require('cluster');
+//	if (cluster.isWorker) console.log('Worker %d received request',
+//		cluster.worker.id);
+//});
 
 var mailTransport = nodemailer.createTransport({
 	service: 'Gmail',
@@ -324,20 +332,18 @@ app.use(function(err, req, res, next) {
 		emailService.emailError('the widget broke down!', __filename, err);
 });
 
-var server;
-
 function startServer() {
-	server = http.createServer(app).listen(app.get('port'), function() {
+	http.createServer(app).listen(app.get('port'), function() {
 		console.log('Express started in ' + app.get('env') +
 			' mode on http://localhost:' + app.get('port') +
 			'; press Ctrl-C to terminate.');
 	});
 }
-
 if (require.main === module) {
-	// application run directly; start app server
+	// application run directly; start app server 
 	startServer();
 } else {
-	// application imported as a module via "require": export function to create server
+	// application imported as a module via "require": export function 
+	// to create server
 	module.exports = startServer;
 }
