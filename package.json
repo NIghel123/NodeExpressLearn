@@ -30,6 +30,7 @@
 		"express-logger": "0.0.3",
 		"express-session": "^1.15.6",
 		"formidable": "^1.2.1",
+		"fs": "0.0.1-security",
 		"http": "0.0.0",
 		"jquery-file-upload-middleware": "^0.1.8",
 		"loadtest": "^3.0.4",

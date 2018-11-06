@@ -5,3 +5,5 @@ package-lock.json
 web-development-with-node-and-express
 credentials.js
 log
+public/uploads/
+data

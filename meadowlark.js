@@ -7,7 +7,8 @@ var express = require('express'),
 	credentials = require('./credentials.js'),
 	//self made module to send email:
 	emailService = require('./lib/email.js')(credentials),
-	http = require('http');
+	http = require('http'),
+	fs = require('fs');
 
 
 var app = express();
@@ -327,6 +328,7 @@ app.post('/process', function(req, res) {
 	//res.redirect(303, '/thank-you');
 
 });
+
 app.get('/contest/vacation-photo', function(req, res) {
 	var now = new Date();
 	res.render('contest/vacation-photo', {
@@ -334,18 +336,57 @@ app.get('/contest/vacation-photo', function(req, res) {
 		month: now.getMonth()
 	});
 });
+// make sure data directory exists
+var dataDir = __dirname + '/data';
+var vacationPhotoDir = dataDir + '/vacation-photo';
+// the second method is only carried out, when the first one yields false!
+fs.existsSync(dataDir) || fs.mkdirSync(dataDir);
+fs.existsSync(vacationPhotoDir) || fs.mkdirSync(vacationPhotoDir);
+
+function saveContestEntry(contestName, email, year, month, photoPath) {
+	// TODO...this will come later
+}
 app.post('/contest/vacation-photo/:year/:month', function(req, res) {
 	var form = new formidable.IncomingForm();
 	form.parse(req, function(err, fields, files) {
 		if (err) return res.redirect(303, '/error');
-		console.log('received fields:');
-		console.log(fields);
-		console.log('received files:');
-		console.log(files);
-		res.redirect(303, '/thank-you');
+		if (err) {
+			res.session.flash = {
+				type: 'danger',
+				intro: 'Oops!',
+				message: 'There was an error processing your submission. ' +
+					'Pelase try again.',
+			};
+			return res.redirect(303, '/contest/vacation-photo');
+		}
+		var photo = files.photo;
+		var dir = vacationPhotoDir + '/' + Date.now();
+		var path = dir + '/' + photo.name;
+		fs.mkdirSync(dir);
+		fs.renameSync(photo.path, dir + '/' + photo.name);
+		saveContestEntry('vacation-photo', fields.email,
+			req.params.year, req.params.month, path);
+		req.session.flash = {
+			type: 'success',
+			intro: 'Good luck!',
+			message: 'You have been entered into the contest.',
+		};
+		//return res.redirect(303, '/contest/vacation-photo/entries');
 	});
 });
+//app.post('/contest/vacation-photo/:year/:month', function(req, res) {
+//	var form = new formidable.IncomingForm();
+//	form.parse(req, function(err, fields, files) {
+//		if (err) return res.redirect(303, '/error');
+//		console.log('received fields:');
+//		console.log(fields);
+//		console.log('received files:');
+//		console.log(files);
+//		//res.redirect(303, '/thank-you');
+//	});
+//});
 app.use('/upload', function(req, res, next) {
+	debugger;
 	var now = Date.now();
 	jqupload.fileHandler({
 		uploadDir: function() {
